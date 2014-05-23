@@ -18,6 +18,7 @@
  */
 #define OPTION_REGISTERED_SERVICES (char*)"registeredServices"
 #define OPTION_EOB_TIMEOUT (char*)"EOBTimeout"
+#define OPTION_STORAGE_DIR (char*)"storageDir"
 
 namespace na62 {
 namespace dim {
@@ -38,10 +39,11 @@ public:
 				po::value<std::string>()->default_value(""),
 				"Instead of registering services via DIM you can list services to be registered here. The format must be $service1,$service2,....,$serviceN")
 
-		(OPTION_EOB_TIMEOUT, po::value<std::string>()->default_value(""),
+		(OPTION_EOB_TIMEOUT, po::value<float>()->default_value(1.0),
 				"X seconds after every change of the EOB time the registered services will be read out. This enables the services to change their value triggered by the EOB signal.")
 
-				;
+		(OPTION_STORAGE_DIR, po::value<std::string>()->required(),
+				"Path to the directory where EOB files should be written to.");
 
 		Options::Initialize(argc, argv, desc);
 	}

@@ -3,6 +3,9 @@
  *
  *  Created on: May 21, 2014
  *      Author: Jonas Kunze (kunze.jonas@gmail.com)
+ *
+ *  This is the main Dim server receiving EOB_TS state changes and triggering the
+ *  writing of burst files (XML).
  */
 
 #ifndef EOBLISTENER_H_
@@ -10,6 +13,8 @@
 
 #include <dim/dic.hxx>
 #include <dim/dis.hxx>
+#include <cstdint>
+#include <string>
 
 namespace na62 {
 namespace dim {
@@ -26,10 +31,11 @@ private:
 
 	DimInfo burstNumber_;
 	DimInfo runNumber_;
-	DimUpdatedInfo SOB_TS_;
+	DimInfo SOB_TS_;
 	DimUpdatedInfo EOB_TS_;
 
 	const RegistryHandler* registryHandler_;
+	std::string generateFileName(uint32_t runNumber, uint32_t burstID, uint32_t duplicate);
 };
 } /* namespace dim */
 } /* namespace na62 */
