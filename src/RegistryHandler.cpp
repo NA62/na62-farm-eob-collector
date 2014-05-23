@@ -109,13 +109,13 @@ void RegistryHandler::addXmlEntity(std::stringstream& stream,
 		stream << info->getString();
 	} else if (strcmp(format, "S") == 0) { // Short
 		stream << info->getShort();
-	} else if (strcmp(format, "I") == 0) { // Integer
+	} else if (strcmp(format, "I") == 0 || strcmp(format, "I:1") == 0) { // Integer
 		stream << info->getInt();
-	} else if (strcmp(format, "L") == 0) { // Long
+	} else if (strcmp(format, "L") == 0 || strcmp(format, "L:1") == 0) { // Long
 		stream << info->getLonglong();
-	} else if (strcmp(format, "F") == 0) { // Float
+	} else if (strcmp(format, "F") == 0 || strcmp(format, "F:1") == 0) { // Float
 		stream << info->getFloat();
-	} else {
+	}	else {
 		stream << "Unknown Value type: " << std::string(info->getFormat());
 	}
 
