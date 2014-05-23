@@ -61,8 +61,9 @@ public:
 	static void addXmlEntity(std::stringstream& stream, DimInfoWithUpdateTime* info);
 
 private:
-	DimCommand *registerCommand;
-	DimCommand *unregisterCommand;
+	DimCommand *registerCommand_;
+	DimCommand *unregisterCommand_;
+	DimService *registeredServicesService_;
 	std::map<std::string, DimInfoWithUpdateTime*> registeredServices;
 
 };
