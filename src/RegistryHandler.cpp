@@ -9,15 +9,16 @@
 
 #include <boost/algorithm/string.hpp>
 #include <glog/logging.h>
-#include <options/Options.h>
 #include <algorithm>
 #include <deque>
 #include <iostream>
 #include <sstream>
 #include <iterator>
 #include <vector>
+#include <sstream>
 
-//#include "options/MyOptions.h"
+#include "options/MyOptions.h"
+#include "DimInfoWithUpdateTime.h"
 
 namespace na62 {
 namespace dim {
@@ -30,6 +31,8 @@ RegistryHandler::RegistryHandler() :
 				new DimCommand(
 						std::string("EOB_DATA_COLLECTOR/UNREGISTER").data(),
 						(char*) ("C"), this)) {
+
+	registerServices(Options::GetStringList(OPTION_REGISTERED_SERVICES));
 }
 
 void RegistryHandler::commandHandler() {
@@ -61,7 +64,7 @@ void RegistryHandler::commandHandler() {
 void RegistryHandler::registerServices(std::vector<std::string> services) {
 	for (std::string service : services) {
 		if (registeredServices.find(service) == registeredServices.end()) {
-			DimInfo* info = new DimInfo(service.c_str(), -1);
+			DimInfoWithUpdateTime* info = new DimInfoWithUpdateTime(service);
 			registeredServices[service] = info;
 		}
 	}
@@ -70,21 +73,53 @@ void RegistryHandler::registerServices(std::vector<std::string> services) {
 void RegistryHandler::unregisterServices(std::vector<std::string> services) {
 	for (std::string service : services) {
 		if (registeredServices.find(service) != registeredServices.end()) {
-			DimInfo* info = registeredServices[service];
+			DimInfoWithUpdateTime* info = registeredServices[service];
 			delete info;
 			registeredServices.erase(service);
 		}
 	}
 }
 
-std::string RegistryHandler::getAllData() const {
+std::string RegistryHandler::generateAllServicesXml(uint runNumber, uint burst, uint sob, uint eob) const {
 	std::stringstream output;
+	output << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
+	output << "<burst>\n";
+	output << "\t<run>"<<runNumber<<"</run>\n";
+	output << "\t<burstID>"<<burst<<"</burstID>\n";
+	output << "\t<sob>"<<sob<<"</sob>\n";
+	output << "\t<eob>"<<eob<<"</eob>\n";
 	for (auto kv : registeredServices) {
 		std::string serviceName = kv.first;
-		DimInfo* info = kv.second;
-		output << serviceName << ":" << info->getString() << ",";
+		DimInfoWithUpdateTime* info = kv.second;
+		addXmlEntity(output, info);
 	}
+	output << "</burst>\n";
 	return output.str();
+}
+
+void RegistryHandler::addXmlEntity(std::stringstream& stream,
+		DimInfoWithUpdateTime* info) {
+	stream << "\t<service>\n";
+	stream << "\t\t<name>" << info->getServiceName() << "</name>\n";
+	stream << "\t\t<age>" << info->getInfoAge() << "</age>\n";
+	stream << "\t\t<value>";
+	char* format = info->getFormat();
+
+	if (strcmp(format, "C") == 0) { // String
+		stream << info->getString();
+	} else if (strcmp(format, "S") == 0) { // Short
+		stream << info->getShort();
+	} else if (strcmp(format, "I") == 0) { // Integer
+		stream << info->getInt();
+	} else if (strcmp(format, "L") == 0) { // Long
+		stream << info->getLonglong();
+	} else if (strcmp(format, "F") == 0) { // Float
+		stream << info->getFloat();
+	} else {
+		stream << "Unknown Value type: " << std::string(info->getFormat());
+	}
+
+	stream << "</value>\n\t</service>\n";
 }
 
 }

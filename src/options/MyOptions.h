@@ -16,17 +16,8 @@
 /*
  * Available options
  */
-#define OPTION_FARM_EXEC_PATH (char*)"farmExecPath"
-#define OPTION_HEARTBEAT_TIMEOUT_MILLIS (char*)"hearbeatTimeoutMillis"
-
-#define OPTION_MULTI_STAT_SERVICES (char*)"multiStatServices"
-#define OPTION_LONGLONG_SERVICES (char*)"singlelongServices"
-#define OPTION_IS_MERGER (char*)"isMerger"
-
-/*
- * Performance
- */
-#define OPTION_ZMQ_IO_THREADS (char*)"zmqIoThreads"
+#define OPTION_REGISTERED_SERVICES (char*)"registeredServices"
+#define OPTION_EOB_TIMEOUT (char*)"EOBTimeout"
 
 namespace na62 {
 namespace dim {
@@ -39,23 +30,16 @@ public:
 		desc.add_options()
 
 		(OPTION_CONFIG_FILE,
-				po::value<std::string>()->default_value("/etc/na62-farm-dim.conf"),
+				po::value<std::string>()->default_value(
+						"/etc/na62-farm-eob-collector.conf"),
 				"Config file for the options shown here")
 
-		(OPTION_FARM_EXEC_PATH, po::value<std::string>()->required(),
-				"Path to the executable farm program")
+		(OPTION_REGISTERED_SERVICES,
+				po::value<std::string>()->default_value(""),
+				"Instead of registering services via DIM you can list services to be registered here. The format must be $service1,$service2,....,$serviceN")
 
-		( OPTION_HEARTBEAT_TIMEOUT_MILLIS, po::value<int>()->required(),
-				"Number of milliseconds that have to pass without receiving a heart beat from the farm program until we go into error mode.")
-
-		( OPTION_MULTI_STAT_SERVICES, po::value<std::string>()->required(),
-				"Comma separated (S1,S2,S3...) list of services with multiple stats like \"A:a;B:b\"")
-
-		( OPTION_LONGLONG_SERVICES, po::value<std::string>()->required(),
-				"Comma separated list (S1,S2,S3...) of services with single long values.")
-
-		( OPTION_IS_MERGER, po::value<int>()->required(),
-				"Set 1 if this is the dim connector for a merger and 0 if it is running on a farm PC.")
+		(OPTION_EOB_TIMEOUT, po::value<std::string>()->default_value(""),
+				"X seconds after every change of the EOB time the registered services will be read out. This enables the services to change their value triggered by the EOB signal.")
 
 				;
 

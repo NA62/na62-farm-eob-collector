@@ -26,7 +26,8 @@ private:
 
 	DimInfo burstNumber_;
 	DimInfo runNumber_;
-	DimInfo SOB_TS_;
+	DimUpdatedInfo SOB_TS_;
+	DimUpdatedInfo EOB_TS_;
 
 	const RegistryHandler* registryHandler_;
 };

@@ -57,6 +57,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="boost_program_options"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="boost_filesystem"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="glog"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="boost_timer"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1512762879" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/na62-farm-lib/Debug}&quot;"/>

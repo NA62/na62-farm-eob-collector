@@ -17,16 +17,17 @@
 #define MYCOMMANDHANDLER_H_
 
 #include <dim/dis.hxx>
-#include <dim/dic.hxx>
 #include <map>
 #include <string>
 #include <vector>
 
 class DimCommand;
 
-
 namespace na62 {
 namespace dim {
+
+class DimInfoWithUpdateTime;
+
 class RegistryHandler: public DimCommandHandler // In order to inherit "commandHandler" method
 {
 public:
@@ -52,12 +53,17 @@ public:
 	/**
 	 * Reads all registered services and generates a string in the format of $service1:$value1,$service2:$value2,...,$serviceN:$valueN
 	 */
-	std::string getAllData() const;
+	std::string generateAllServicesXml(uint runNumber, uint burst, uint sob, uint eob) const;
+
+	/**
+	 * Reads all registered services and generates a string in the format of $service1:$value1,$service2:$value2,...,$serviceN:$valueN
+	 */
+	static void addXmlEntity(std::stringstream& stream, DimInfoWithUpdateTime* info);
 
 private:
 	DimCommand *registerCommand;
 	DimCommand *unregisterCommand;
-	std::map<std::string, DimInfo*> registeredServices;
+	std::map<std::string, DimInfoWithUpdateTime*> registeredServices;
 
 };
 } /* namespace dim */
