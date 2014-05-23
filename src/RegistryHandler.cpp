@@ -24,13 +24,15 @@ namespace na62 {
 namespace dim {
 
 RegistryHandler::RegistryHandler() :
-		registerCommand(
+		registerCommand_(
 				new DimCommand(
 						std::string("EOB_DATA_COLLECTOR/REGISTER").data(),
-						(char*) ("C"), this)), unregisterCommand(
+						(char*) ("C"), this)), unregisterCommand_(
 				new DimCommand(
 						std::string("EOB_DATA_COLLECTOR/UNREGISTER").data(),
-						(char*) ("C"), this)) {
+						(char*) ("C"), this)), registeredServicesService_(
+				new DimService("EOB_DATA_COLLECTOR/REGISTERED",
+						(char*) Options::GetString(OPTION_REGISTERED_SERVICES).c_str())) {
 
 	registerServices(Options::GetStringList(OPTION_REGISTERED_SERVICES));
 }
@@ -47,18 +49,27 @@ void RegistryHandler::commandHandler() {
 	std::vector<std::string> services;
 	boost::split(services, message, boost::is_any_of(","));
 
-	if (currCmnd == registerCommand) {
+	if (currCmnd == registerCommand_) {
 		registerServices(services);
-	} else if (currCmnd == unregisterCommand) {
+	} else if (currCmnd == unregisterCommand_) {
 		unregisterServices(services);
 	} else {
 		LOG(ERROR)<<"RegistryHandler received command from a non registered DimCommand";
 	}
 
-	std::cout << "All registered services: " << std::endl;
+	std::stringstream allServices;
+	bool first = true;
 	for (auto kv : registeredServices) {
-		std::cout << kv.first << std::endl;
+		if (!first) {
+			allServices << ",";
+		} else {
+			first = false;
+		}
+		allServices << kv.first;
 	}
+
+	registeredServicesService_->updateService(
+			(char*) allServices.str().c_str());
 }
 
 void RegistryHandler::registerServices(std::vector<std::string> services) {
@@ -80,14 +91,15 @@ void RegistryHandler::unregisterServices(std::vector<std::string> services) {
 	}
 }
 
-std::string RegistryHandler::generateAllServicesXml(uint runNumber, uint burst, uint sob, uint eob) const {
+std::string RegistryHandler::generateAllServicesXml(uint runNumber, uint burst,
+		uint sob, uint eob) const {
 	std::stringstream output;
 	output << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
 	output << "<burst>\n";
-	output << "\t<run>"<<runNumber<<"</run>\n";
-	output << "\t<burstID>"<<burst<<"</burstID>\n";
-	output << "\t<sob>"<<sob<<"</sob>\n";
-	output << "\t<eob>"<<eob<<"</eob>\n";
+	output << "\t<run>" << runNumber << "</run>\n";
+	output << "\t<burstID>" << burst << "</burstID>\n";
+	output << "\t<sob>" << sob << "</sob>\n";
+	output << "\t<eob>" << eob << "</eob>\n";
 	for (auto kv : registeredServices) {
 		std::string serviceName = kv.first;
 		DimInfoWithUpdateTime* info = kv.second;
@@ -115,7 +127,7 @@ void RegistryHandler::addXmlEntity(std::stringstream& stream,
 		stream << info->getLonglong();
 	} else if (strcmp(format, "F") == 0 || strcmp(format, "F:1") == 0) { // Float
 		stream << info->getFloat();
-	}	else {
+	} else {
 		stream << "Unknown Value type: " << std::string(info->getFormat());
 	}
 
