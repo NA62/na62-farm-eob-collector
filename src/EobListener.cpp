@@ -101,9 +101,9 @@ std::string EobListener::generateFileName(uint32_t runNumber, uint32_t burstID,
 	char buffer[64];
 
 	if (duplicate == 0) {
-		sprintf(buffer, "burstinfo%06d-%04d.dat", runNumber, burstID);
+		sprintf(buffer, "burstinfo%06d-%04d.xml", runNumber, burstID);
 	} else {
-		sprintf(buffer, "burstinfo%06d-%04d_%d.dat", runNumber, burstID,
+		sprintf(buffer, "burstinfo%06d-%04d_%d.xml", runNumber, burstID,
 				duplicate);
 	}
 	return std::string(buffer);
