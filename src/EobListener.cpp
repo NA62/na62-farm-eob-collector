@@ -54,7 +54,7 @@ void EobListener::infoHandler() {
 	}
 
 	if (nextBurst == -1 && curr == &burstNumber_) {
-		int burstNumber = burstNumber_.getInt();
+		nextBurst = burstNumber_.getInt();
 	}
 
 	if (nextSob == -1 && curr == &SOB_TS_) {
