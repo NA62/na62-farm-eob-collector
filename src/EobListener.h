@@ -27,12 +27,19 @@ public:
 	virtual ~EobListener();
 
 private:
+	/*
+	 * Called whenever a registered DimInfo changes
+	 */
 	void infoHandler();
 
 	DimInfo burstNumber_;
 	DimInfo runNumber_;
 	DimInfo SOB_TS_;
 	DimUpdatedInfo EOB_TS_;
+
+	int nextRunNumber;
+	int nextBurst;
+	int nextSob;
 
 	const RegistryHandler* registryHandler_;
 	std::string generateFileName(uint32_t runNumber, uint32_t burstID, uint32_t duplicate);
